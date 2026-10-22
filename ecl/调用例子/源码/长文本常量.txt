@@ -1,0 +1,105 @@
+set epath "EPATH"
+  //设置默认易语言路径
+  //如： ecl.exe set epath "C:\Program Files (x86)\e\e.exe"
+  
+make Source [Target] [-epath path] [-bm|-bmX|-s|-d] [-bmcfg config] [-bmdes description] [-pwd password] [...]
+  //编译源码
+  Source //源码全路径,如："C:\test.e"
+  Target //保存文件,如："C:\Release\test.exe",可空,默认生成到源码所在目录,文件名与源码相同
+  -epath 指定易语言路径 //若不指定易语言路径，则使用默认易语言或自动寻找
+    //如: ecl.exe make "C:\test.e" -epath "C:\Program Files (x86)\e\e.exe" -s
+  -bm    //黑月编译:
+    -bmcfg 配置名称 //可空,黑月4.0版本以上才有效
+    -bmdes 特定备注 //可空,黑月4.0版本以上才有效
+  -bm0   //黑月汇编模式编译(黑月3.8及版本以下才有效，否则按-bm处理)
+  -bm1   //黑月C++模式编译(黑月3.8及版本以下才有效，否则按-bm处理)
+  -bm2   //黑月MFC模式编译(黑月3.8及版本以下才有效，否则按-bm处理)
+  -s     //静态编译
+  -d     //独立编译
+  -p     //编译易包
+  -pwd  源码密码
+  -lib  启用的支持库文件名列表 //不要加后缀.fne,多个支持库用;分号分隔
+    //如: -lib "BlackMoon;spec"
+  -e_xxx 指定易语言link.ini配置项的内容 //xxx代表配置项名(但不会实际地修改该文件，只是用来告知易语言)
+    //如：-e_linker "\VC98linker\Bin"
+  -k      //执行完毕后，此命令行工具不会立即退出
+  -show   //显示易语言窗口
+  -st  启用易语言超时 //单位秒，默认5分钟
+  -ct  编译超时       //单位秒，默认10分钟
+    //如： -ct 600
+  -q      //静默模式，只输出错误信息
+  -nologo //不打印版权横幅
+  
+  //下面是指定源码中的特定值，但不会修改源码文件：
+  -ver 指定编译后的文件版本号
+    //如： -ver 1.2.4.9
+  -const "常量名=值"    //修改常量值
+    //如(数值常量值)： -const "常量1=1;常量2=2;常量3=3"
+    //如(文本常量值)： -const "常量1="""fdsa1""";常量2="""fdsa2""";常量3="""fdsa3""""
+	//如(时间常量值)： -const "常量1=[2020年9月13日7时34分59秒];常量2=[2020/9/13 7:34:59]"
+	//如(逻辑常量值)： -const "常量1=真;常量2=true;常量3=false"
+    //如(从文件中指定长文本常量内容)： -const "常量1=@c:\c1.txt;常量2=@c:\c2.txt"
+    //如： -const "常量1=1;常量2="""fdsa""";常量3=@c:\c3.txt"
+	//命令行中，连续三个引号代表一个被转义的引号。
+  -pic "资源名=@路径"   //修改图片资源值,若为相对路径,则路径相对于源码目录
+    //如： -pic "图片1=@c:\p1.bmp;图片2=@..\p2.bmp;图片3=@p3.bmp"
+  -sound "资源名=@路径" //修改声音资源值,使用方法参考 -pic
+	
+  //下面是易语言的系统配置：
+  -FastArry       //开启快速数组访问方式(不开启为-FastArry-，默认不开启)
+  -CheckDllStack  //开启调用DLL命令后检查堆栈错误(不开启为-CheckDllStack-，默认开启)
+  -CheckLoop      //开启死循环代码检查(不开启为-CheckLoop-，默认开启)
+  -Windows6.0     //使用Windows通用组件库6.0版(不使用为-Windows6.0-，默认不使用)
+  -UAC            //运行前是否请求管理员权限(不请求为-UAC-，默认不请求，仅易语言5.3及以上版本有效)
+  -OutLib         //非独立编译后写出相关库(不写出为-OutLib-，默认不写出)
+  -CheckName      //开启严格的重复名称检查(不开启为-CheckName-，默认不开启)
+  -JunkLevel 花指令级别 //默认0不插花，最大值为3
+    //如：-JunkLevel 3
+  -Upset 编译结果打乱码 //默认0不打乱，随机打乱为0xFFFFFFFF
+    //如：-Upset 0xFFFFFFFF
+  -KeepEConfig    //不改变易的系统配置
+
+  //示例1(普通编译):
+    ecl.exe make "C:\test.e"
+
+  //示例2(指定易语言路径进行静态编译):
+    ecl.exe make "C:\test.e" -epath "C:\Program Files (x86)\e\e.exe" -s
+
+  //示例3(使用黑月编译并指定配置名称):
+    ecl.exe make "C:\test.e" -bm -bmcfg "默认配置"
+
+  //示例4(编译带密码的源码):
+    ecl.exe make "C:\test.e" -pwd "The Password"
+
+  //示例5(编译文件保存到C:\test.exe):
+    ecl.exe make "C:\test.e" "C:\test.exe"
+
+@文件路径 
+  //从文件中指定命令行
+  //如：ecl.exe @test.txt
+    //test.txt的内容可以为：make "C:\text.e"
+    //test.txt中的不同参数间可以用换行符分隔
+
+
+错误代码列表：
+#define ECL_ERROR_SUCCESS                1  //处理成功
+#define ECL_ERROR_OK                     0  //未发生错误
+#define ECL_ERROR_UNKNOW                -1  //未定义类型的错误
+#define ECL_ERROR_PARAM                 -2  //命令行有错误
+#define ECL_ERROR_FILENOTFOUND          -3  //找不到文件
+#define ECL_ERROR_FILEINVALID           -4  //文件无效
+#define ECL_ERROR_COMPILE               -5  //编译失败
+#define ECL_ERROR_INVALIDCOMPILETYPE    -6  //不支持的编译类型
+#define ECL_ERROR_ECANNOTSTART          -7  //无法识别或无法运行的易语言程序
+#define ECL_ERROR_CANNOTGETMENU         -8  //无法获取易语言菜单 
+#define ECL_ERROR_SHUTDOWN              -9  //易语言意外结束
+#define ECL_ERROR_STATIC                -10 //静态编译失败
+#define ECL_ERROR_MAKELINKINI           -11 //生成link.ini文件过程中出错
+#define ECL_ERROR_BMINFO                -12 //老版黑月的相关数据无法定位
+#define ECL_ERROR_BMCOMPILE             -13 //黑月编译失败
+#define ECL_ERROR_PASSWORD              -14 //源码密码不正确
+#define ECL_ERROR_EC                    -15 //缺乏易模块
+#define ECL_ERROR_ELIB                  -16 //缺少支持库
+#define ECL_ERROR_STARTTIMEOUT          -17 //启动易语言超时
+#define ECL_ERROR_COMPILETIMEOUT        -18 //编译超时
+#define ECL_ERROR_NOTSUPPORTEPK         -19 //不支持易包编译
